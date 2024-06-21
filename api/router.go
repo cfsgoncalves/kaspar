@@ -12,17 +12,12 @@ type Router struct {
 
 func NewRouter() {
 	cache := repository.NewRedis()
-
-	stocks := usecase.NewStocksImplementation(cache)
+	stockApi := NewStockApi(usecase.NewStockRedditApi(cache))
 	system := usecase.NewSystemImplementation(cache)
 
 	router := gin.Default()
-	//Recommend all stocks for a specific date
-	router.GET("/v1/stocks/*date", stocks.GetStocks)
-	//Recommend the best stocks to buy for a specific date
-	router.GET("/v1/recommend/buy/*date", nil)
-	//Recommend the best stocks to sell for a specific date
-	router.GET("/v1/recommend/sell/*date", nil)
+	//Get a specific stock with a recomendation
+	router.GET("/v1/stocks/:name/*date", stockApi.GetStockByNameAndOptionalDate)
 	router.GET("/health", system.Health)
 	router.GET("/ping", system.Ping)
 
