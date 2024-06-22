@@ -1,6 +1,7 @@
 package api
 
 import (
+	"kaspar/configuration"
 	usecase "kaspar/usecase/interface"
 	"net/http"
 	"time"
@@ -19,7 +20,7 @@ func NewStockApi(stockApi usecase.Stocks) *StockAPI {
 func (s *StockAPI) GetStockByNameAndOptionalDate(c *gin.Context) {
 	dateParam, hasDate := c.Params.Get("date")
 	stockName, _ := c.Params.Get("name")
-	DATE_FORMAT := "2006-01-02"
+	DATE_FORMAT := configuration.GetEnvAsString("DATE_FORMAT", "2006-01-02")
 	date := time.Now().UTC().Format(DATE_FORMAT)
 
 	//Validate date paramenter

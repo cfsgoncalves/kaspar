@@ -37,7 +37,7 @@ func (s *StockRedditApi) GetStockByName(date string, stockName string) (string, 
 			return "", err
 		}
 
-		jsonStock, err := FindStockByName(stockList, stockName)
+		jsonStock, err := findStockByName(stockList, stockName)
 
 		if err != nil {
 			return "", err
@@ -47,13 +47,13 @@ func (s *StockRedditApi) GetStockByName(date string, stockName string) (string, 
 	}
 
 	//Get stocks from reddit api and save on cache
-	stockList, err = FetchFromRedditApi(date, s.Cache)
+	stockList, err = fetchFromRedditApi(date, s.Cache)
 
 	if err != nil {
 		return "", err
 	}
 
-	jsonStock, err := FindStockByName(stockList, stockName)
+	jsonStock, err := findStockByName(stockList, stockName)
 
 	if err != nil {
 		return "", nil
@@ -61,7 +61,7 @@ func (s *StockRedditApi) GetStockByName(date string, stockName string) (string, 
 	return jsonStock, nil
 }
 
-func FindStockByName(stockList []entities.RedditStock, stockName string) (string, error) {
+func findStockByName(stockList []entities.RedditStock, stockName string) (string, error) {
 
 	for _, stock := range stockList {
 		if stock.Ticker == stockName {
@@ -76,7 +76,7 @@ func FindStockByName(stockList []entities.RedditStock, stockName string) (string
 	return "", errors.New("could not find the stock that was input by the user")
 }
 
-func FetchFromRedditApi(date string, cache repository.Cache) ([]entities.RedditStock, error) {
+func fetchFromRedditApi(date string, cache repository.Cache) ([]entities.RedditStock, error) {
 	var stockList []entities.RedditStock
 	REQUEST_URL := "https://tradestie.com/api/v1/apps/reddit?date=" + date
 
