@@ -3,11 +3,13 @@ package usecase
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
+	"kaspar/configuration"
 	"kaspar/entities"
 	"kaspar/repository"
 	"net/http"
+
+	"github.com/rs/zerolog/log"
 )
 
 type StockRedditApi struct {
@@ -18,15 +20,14 @@ func NewStockRedditApi(cache repository.Cache) *StockRedditApi {
 	return &StockRedditApi{Cache: cache}
 }
 
-// Incomplete
-func (s *StockRedditApi) GetStockByName(date string, stockName string) (string, error) {
+// Add bad input
+func (s *StockRedditApi) GetStockByName(date string, stockName string) (any, error) {
 	var stockList []entities.RedditStock
 
 	//Check for cache if exists
 	stockListCache, err := s.Cache.Get(date)
 	if err != nil {
-		//Log error if exists, but don't terminate
-		return "", err
+		log.Error().Msgf("usecase.GetStockByName(): Error yield acessing cache service. Error: %s", err)
 	}
 
 	// Return the values on cache with 200 and value
@@ -34,72 +35,75 @@ func (s *StockRedditApi) GetStockByName(date string, stockName string) (string, 
 		err := json.Unmarshal([]byte(stockListCache), &stockList)
 
 		if err != nil {
-			return "", err
+			log.Error().Msgf("usecase.GetStockByName(): Error yield while unmarshaling stock list. Error: %s", err)
+			return nil, err
 		}
 
-		jsonStock, err := findStockByName(stockList, stockName)
+		selectedStock, err := findStockByName(stockList, stockName)
 
 		if err != nil {
-			return "", err
+			log.Error().Msgf("usecase.GetStockByName(): Error yield finding stock by name. Error: %s", err)
+			return nil, err
 		}
-
-		return jsonStock, nil
+		return selectedStock, nil
 	}
 
 	//Get stocks from reddit api and save on cache
 	stockList, err = fetchFromRedditApi(date, s.Cache)
 
 	if err != nil {
-		return "", err
+		log.Error().Msgf("usecase.GetStockByName(): Error yield fething from reddit api. Error: %s", err)
+		return nil, err
 	}
 
-	jsonStock, err := findStockByName(stockList, stockName)
+	selectedStock, err := findStockByName(stockList, stockName)
 
 	if err != nil {
-		return "", nil
+		log.Error().Msgf("usecase.GetStockByName(): Error yield finding stock by name. Error: %s", err)
+		return nil, nil
 	}
-	return jsonStock, nil
+	return selectedStock, nil
 }
 
-func findStockByName(stockList []entities.RedditStock, stockName string) (string, error) {
+func findStockByName(stockList []entities.RedditStock, stockName string) (any, error) {
 
 	for _, stock := range stockList {
 		if stock.Ticker == stockName {
-			value, err := json.Marshal(stock)
-			if err != nil {
-				return "", err
-			}
-			return string(value), nil
+			return stock, nil
 		}
 	}
 
-	return "", errors.New("could not find the stock that was input by the user")
+	log.Error().Msgf("usecase.findStockByName(): Could not find the stock that was input by the user")
+	return nil, errors.New("could not find the stock that was input by the user")
 }
 
 func fetchFromRedditApi(date string, cache repository.Cache) ([]entities.RedditStock, error) {
 	var stockList []entities.RedditStock
-	REQUEST_URL := "https://tradestie.com/api/v1/apps/reddit?date=" + date
+	REDDIT_API_URL := configuration.GetEnvAsString("REDDIT_API_URL", "https://tradestie.com/api/v1/apps/reddit?date=") + date
 
-	resp, err := http.Get(REQUEST_URL)
+	resp, err := http.Get(REDDIT_API_URL)
 	if err != nil {
-		fmt.Printf("error making http request: %s\n", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
-		// log could not read body
-		fmt.Printf("Could not read body")
+		log.Error().Msgf("usecase.fetchFromRedditApi(): Error yield while reading body from GET request. Error: %s", err)
 		return nil, err
 	}
 
-	//Save on Cache - Parallel - Independent from finding the stock
-	go cache.Insert(date, string(body))
+	//Consider putting it in parallel execution
+	err = cache.Insert(date, string(body))
+
+	if err != nil {
+		log.Error().Msgf("usecase.fetchFromRedditApi(): Error yield while inserting on cache service. Error: %s", err)
+	}
 
 	err = json.Unmarshal([]byte(body), &stockList)
 
 	if err != nil {
+		log.Error().Msgf("usecase.fetchFromRedditApi(): Error yield while unmarshaling body from GET request. Error: %s", err)
 		return nil, err
 	}
 

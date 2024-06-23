@@ -4,6 +4,7 @@ import (
 	"kaspar/configuration"
 	usecase "kaspar/usecase/interface"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,18 +19,20 @@ func NewStockApi(stockApi usecase.Stocks) *StockAPI {
 }
 
 func (s *StockAPI) GetStockByNameAndOptionalDate(c *gin.Context) {
-	dateParam, hasDate := c.Params.Get("date")
+	dateParam, _ := c.Params.Get("date")
+	dateParam = strings.Trim(dateParam, "/")
 	stockName, _ := c.Params.Get("name")
 	DATE_FORMAT := configuration.GetEnvAsString("DATE_FORMAT", "2006-01-02")
 	date := time.Now().UTC().Format(DATE_FORMAT)
 
 	//Validate date paramenter
-	if hasDate {
+	if dateParam != "" {
 		_, err := time.Parse(DATE_FORMAT, dateParam)
 		if err != nil {
 			c.Status(http.StatusBadRequest)
 		}
 		date = dateParam
+		println(date)
 	}
 
 	json, err := s.StockAPI.GetStockByName(date, stockName)

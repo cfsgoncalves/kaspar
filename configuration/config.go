@@ -40,14 +40,14 @@ func GetEnvAsInt(env string, defaultVar int) int {
 	envVar := os.Getenv(env)
 
 	if envVar == "" {
-		log.Warn().Msgf("Variable %s does not exists. Returning the default variable", env)
+		log.Warn().Msgf("configuration.GetEnvAsInt():Variable %s does not exists. Returning the default variable", env)
 		return defaultVar
 	}
 
 	intVar, err := strconv.Atoi(envVar)
 
 	if err != nil {
-		log.Error().Msg("Error converting string to int. Using the default variable")
+		log.Error().Msgf("configuration.GetEnvAsInt(): Error converting string to int: %s. Using the default variable", env)
 		return defaultVar
 	}
 	return intVar

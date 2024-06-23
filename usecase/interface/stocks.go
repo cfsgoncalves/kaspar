@@ -1,5 +1,5 @@
 package usecase
 
 type Stocks interface {
-	GetStockByName(string, string) (string, error)
+	GetStockByName(string, string) (any, error)
 }
