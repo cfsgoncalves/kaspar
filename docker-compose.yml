@@ -23,7 +23,6 @@ services:
       - localnet
     depends_on:
       - cache
-      - prometheus
 
   cache:
     image: redis:6.2-alpine

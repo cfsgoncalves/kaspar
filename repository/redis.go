@@ -13,15 +13,15 @@ import (
 var ctx = context.Background()
 
 type Redis struct {
-	redis redis.Client
+	Redis redis.Client
 }
 
 func NewRedis() *Redis {
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", configuration.GetEnvAsString("REDIS_SERVER", "localhost:6379"), configuration.GetEnvAsString("REDIS_PORT", "6379")), // use default Addr
-		Password: configuration.GetEnvAsString("REDIS_PASSWORD", ""),                                                                                       // no password set
-		DB:       configuration.GetEnvAsInt("DB", 0),                                                                                                       // use default DB
+		Addr:     fmt.Sprintf("%s:%s", configuration.GetEnvAsString("REDIS_SERVER", "localhost"), configuration.GetEnvAsString("REDIS_PORT", "6379")), // use default Addr
+		Password: configuration.GetEnvAsString("REDIS_PASSWORD", ""),                                                                                  // no password set
+		DB:       configuration.GetEnvAsInt("DB", 0),                                                                                                  // use default DB
 	})
 
 	status, err := redisClient.Ping(ctx).Result()
@@ -36,13 +36,13 @@ func NewRedis() *Redis {
 		return &Redis{}
 	}
 
-	return &Redis{redis: *redisClient}
+	return &Redis{Redis: *redisClient}
 }
 
 func (r *Redis) Insert(key string, value string) error {
 	TTL := time.Duration(configuration.GetEnvAsInt("REDIS_TTL", 15*60)) * time.Second
 
-	err := r.redis.Set(ctx, key, value, TTL).Err()
+	err := r.Redis.Set(ctx, key, value, TTL).Err()
 	if err != nil {
 		log.Error().Msgf("repository.Get(): Error while inserting data into reddis for key %s. Error %s", key, err)
 		return err
@@ -52,7 +52,7 @@ func (r *Redis) Insert(key string, value string) error {
 
 func (r *Redis) Get(key string) (string, error) {
 
-	val, err := r.redis.Get(ctx, key).Result()
+	val, err := r.Redis.Get(ctx, key).Result()
 
 	if err != nil && err.Error() == "redis: nil" {
 		log.Debug().Msgf("repository.Get(): No value found for key %s", key)
@@ -68,7 +68,7 @@ func (r *Redis) Get(key string) (string, error) {
 }
 
 func (r *Redis) Ping() bool {
-	status, err := r.redis.Ping(ctx).Result()
+	status, err := r.Redis.Ping(ctx).Result()
 
 	if err != nil {
 		log.Error().Msgf("repository.Ping(): Error yield trying to acess redis client. Error: %s", err)

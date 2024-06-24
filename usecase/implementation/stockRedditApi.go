@@ -60,8 +60,9 @@ func (s *StockRedditApi) GetStockByName(date string, stockName string) (any, err
 
 	if err != nil {
 		log.Error().Msgf("usecase.GetStockByName(): Error yield finding stock by name. Error: %s", err)
-		return nil, nil
+		return nil, err
 	}
+
 	return selectedStock, nil
 }
 
