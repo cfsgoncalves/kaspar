@@ -39,3 +39,4 @@ Returns 200 if the system is up.
 ## TODO
 - Prometheous metrics
 - Grafana configuration
+- E2E tests on docker-compose

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"kaspar/api"
 	"kaspar/configuration"
 
@@ -12,5 +13,8 @@ func main() {
 	log.Debug().Msg("Starting Kaspar& stock recommendation service")
 
 	configuration.GetConfiguration()
-	api.NewRouter()
+	router := api.NewRouter()
+
+	router.Run(fmt.Sprintf(":%s", configuration.GetEnvAsString("SERVER_PORT", "8080")))
+
 }

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"kaspar/configuration"
 	"kaspar/repository"
 	usecase "kaspar/usecase/implementation"
@@ -12,7 +11,7 @@ import (
 type Router struct {
 }
 
-func NewRouter() {
+func NewRouter() *gin.Engine {
 	cache := repository.NewRedis()
 	stockApi := NewStockApi(usecase.NewStockRedditApi(cache))
 	system := usecase.NewSystemMonitoring(cache)
@@ -25,5 +24,5 @@ func NewRouter() {
 	router.GET("/health", system.Health)
 	router.GET("/ping", system.Ping)
 
-	router.Run(fmt.Sprintf(":%s", configuration.GetEnvAsString("SERVER_PORT", "8080")))
+	return router
 }
