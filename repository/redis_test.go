@@ -16,4 +16,22 @@ func TestRedisInsert(t *testing.T) {
 
 	})
 
+	t.Run("happy_test", func(t *testing.T) {
+
+	})
+
+	t.Run("fail_to_insert", func(t *testing.T) {
+
+	})
+
+}
+
+func TestRedisGet(t *testing.T) {
+	t.Run("happy_test", func(t *testing.T) {
+
+	})
+
+	t.Run("fail_to_get", func(t *testing.T) {
+
+	})
 }

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"kaspar/configuration"
 	"kaspar/repository"
 	usecase "kaspar/usecase/implementation"
@@ -24,5 +25,5 @@ func NewRouter() {
 	router.GET("/health", system.Health)
 	router.GET("/ping", system.Ping)
 
-	router.Run("localhost:8080")
+	router.Run(fmt.Sprintf(":%s", configuration.GetEnvAsString("SERVER_PORT", "8080")))
 }

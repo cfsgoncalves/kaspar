@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  kaspar:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - .:/opt/app/api
+    ports:
+      - 8080:8080
+    environment:
+      - GIN_MODE=release
+      - REDDIT_API_URL=https://tradestie.com/api/v1/apps/reddit?date=
+      - REDIS_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+      - REDIS_TTL=900
+      - DB=0
+      - DATE_FORMAT=2006-01-02
+      - LOG_LEVEL=0
+      - SERVER_PORT=8080
+      - REDIS_SERVER=cache
+      - REDIS_PORT=6379
+    networks:
+      - localnet
+    depends_on:
+      - cache
+      - prometheus
+
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
+    networks:
+      - localnet
+
+volumes:
+  cache:
+    driver: local
+
+networks:
+  localnet:
+    name: local

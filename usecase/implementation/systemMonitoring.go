@@ -20,4 +20,8 @@ func (s *SystemMonitoring) Ping(context *gin.Context) {
 }
 
 func (s *SystemMonitoring) Health(context *gin.Context) {
+	if s.Cache.Ping() {
+		context.Status(http.StatusOK)
+	}
+	context.Status(http.StatusInternalServerError)
 }

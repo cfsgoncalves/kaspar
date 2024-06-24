@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"kaspar/configuration"
 	"time"
 
@@ -18,9 +19,9 @@ type Redis struct {
 func NewRedis() *Redis {
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     configuration.GetEnvAsString("REDIS_ADDRESS", "localhost:6379"), // use default Addr
-		Password: configuration.GetEnvAsString("REDIS_PASSWORD", ""),              // no password set
-		DB:       configuration.GetEnvAsInt("DB", 0),                              // use default DB
+		Addr:     fmt.Sprintf("%s:%s", configuration.GetEnvAsString("REDIS_SERVER", "localhost:6379"), configuration.GetEnvAsString("REDIS_PORT", "6379")), // use default Addr
+		Password: configuration.GetEnvAsString("REDIS_PASSWORD", ""),                                                                                       // no password set
+		DB:       configuration.GetEnvAsInt("DB", 0),                                                                                                       // use default DB
 	})
 
 	status, err := redisClient.Ping(ctx).Result()
