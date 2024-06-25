@@ -1,6 +1,7 @@
 package api
 
 import (
+	api "kaspar/api/handlers"
 	"kaspar/configuration"
 	"kaspar/repository"
 	usecase "kaspar/usecase/implementation"
@@ -8,12 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Router struct {
-}
-
-func NewRouter() *gin.Engine {
+func HTTPRouteEndpoints() *gin.Engine {
 	cache := repository.NewRedis()
-	stockApi := NewStockApi(usecase.NewStockRedditApi(cache))
+	stockApi := api.NewStockApi(usecase.NewStockRedditApi(cache))
 	system := usecase.NewSystemMonitoring(cache)
 
 	gin.SetMode(configuration.GetEnvAsString("GIN_MODE", "debug"))

@@ -13,7 +13,9 @@ func main() {
 	log.Debug().Msg("Starting Kaspar& stock recommendation service")
 
 	configuration.GetConfiguration()
-	router := api.NewRouter()
+	router := api.HTTPRouteEndpoints()
+
+	go api.GrpcServe()
 
 	router.Run(fmt.Sprintf(":%s", configuration.GetEnvAsString("SERVER_PORT", "8080")))
 

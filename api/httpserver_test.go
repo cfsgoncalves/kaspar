@@ -25,7 +25,7 @@ func TestGetStockByNameAndOptionalDate(t *testing.T) {
 
 	//Add output validation
 	t.Run("happy_path_integration", func(t *testing.T) {
-		router := NewRouter()
+		router := HTTPRouteEndpoints()
 
 		w := httptest.NewRecorder()
 
@@ -39,7 +39,7 @@ func TestGetStockByNameAndOptionalDate(t *testing.T) {
 	})
 
 	t.Run("test_with_date", func(t *testing.T) {
-		router := NewRouter()
+		router := HTTPRouteEndpoints()
 
 		w := httptest.NewRecorder()
 
@@ -51,7 +51,7 @@ func TestGetStockByNameAndOptionalDate(t *testing.T) {
 	})
 
 	t.Run("test_without_date", func(t *testing.T) {
-		router := NewRouter()
+		router := HTTPRouteEndpoints()
 
 		w := httptest.NewRecorder()
 
