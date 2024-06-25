@@ -39,7 +39,7 @@ func (s *StockRedditApi) GetStockByName(date string, stockName string) (any, err
 			return nil, err
 		}
 
-		selectedStock, err := findStockByName(stockList, stockName)
+		selectedStock, err := s.findStockByName(stockList, stockName)
 
 		if err != nil {
 			log.Error().Msgf("usecase.GetStockByName(): Error yield finding stock by name. Error: %s", err)
@@ -49,14 +49,14 @@ func (s *StockRedditApi) GetStockByName(date string, stockName string) (any, err
 	}
 
 	//Get stocks from reddit api and save on cache
-	stockList, err = fetchFromRedditApi(date, s.Cache)
+	stockList, err = s.fetchFromRedditApi(date, s.Cache)
 
 	if err != nil {
 		log.Error().Msgf("usecase.GetStockByName(): Error yield fething from reddit api. Error: %s", err)
 		return nil, err
 	}
 
-	selectedStock, err := findStockByName(stockList, stockName)
+	selectedStock, err := s.findStockByName(stockList, stockName)
 
 	if err != nil {
 		log.Error().Msgf("usecase.GetStockByName(): Error yield finding stock by name. Error: %s", err)
@@ -66,7 +66,7 @@ func (s *StockRedditApi) GetStockByName(date string, stockName string) (any, err
 	return selectedStock, nil
 }
 
-func findStockByName(stockList []entities.RedditStock, stockName string) (any, error) {
+func (s *StockRedditApi) findStockByName(stockList []entities.RedditStock, stockName string) (any, error) {
 
 	for _, stock := range stockList {
 		if stock.Ticker == stockName {
@@ -78,7 +78,7 @@ func findStockByName(stockList []entities.RedditStock, stockName string) (any, e
 	return nil, errors.New("could not find the stock that was input by the user")
 }
 
-func fetchFromRedditApi(date string, cache repository.Cache) ([]entities.RedditStock, error) {
+func (s *StockRedditApi) fetchFromRedditApi(date string, cache repository.Cache) ([]entities.RedditStock, error) {
 	var stockList []entities.RedditStock
 	REDDIT_API_URL := configuration.GetEnvAsString("REDDIT_API_URL", "https://tradestie.com/api/v1/apps/reddit?date=") + date
 
@@ -94,7 +94,8 @@ func fetchFromRedditApi(date string, cache repository.Cache) ([]entities.RedditS
 		return nil, err
 	}
 
-	//Consider putting it in parallel execution
+	// Consider putting it in parallel execution
+	// Would need to create a new method on the interface to do it. Something like parallel insert.
 	err = cache.Insert(date, string(body))
 
 	if err != nil {
