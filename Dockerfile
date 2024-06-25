@@ -17,6 +17,7 @@ RUN go build -o ./app/kaspar ./main/main.go
 
 # This container exposes port 8080 to the outside world
 EXPOSE 8080
+EXPOSE 8081
 
 # Run the binary program produced by `go install`
 CMD ["./app/kaspar"]

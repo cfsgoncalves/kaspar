@@ -7,6 +7,13 @@ Kelvin challenge
   docker-compose up --build
 ```
 
+## Features
+- HTTP Rest endpoint on :8080
+- GRPC Rest endpoint on :8081
+- Some unit and integration tests
+- Cache service with Redis
+- Docker compose that will release the system
+
 ## Kaspar API
 
 #### Get a recomendation based on a specific stock and date
@@ -39,3 +46,5 @@ Returns 200 if the system is up.
 ## TODO
 - Prometheous metrics
 - Grafana configuration
+- E2E tests on docker-compose
+- Consider connection multiplexing golang (Tried cmux. Do this instead: https://github.com/gin-gonic/gin/issues/2501)

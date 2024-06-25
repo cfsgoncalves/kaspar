@@ -8,6 +8,7 @@ services:
       - .:/opt/app/api
     ports:
       - 8080:8080
+      - 8081:8081
     environment:
       - GIN_MODE=release
       - REDDIT_API_URL=https://tradestie.com/api/v1/apps/reddit?date=

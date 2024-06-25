@@ -1,0 +1,20 @@
+syntax="proto3";
+package api;
+
+option go_package = "./api";
+
+service StockHandle {
+	rpc GetStockByNameAndOptionalDate (StockRequest) returns (StockResponse);
+  }
+    
+message StockRequest{
+	string name=1;
+	optional string date=2;
+}
+  
+message StockResponse{
+	int32 no_of_comments=1;
+	string sentiment=2;
+	double sentiment_score=3;
+	string ticker=4;
+}

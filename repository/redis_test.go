@@ -18,7 +18,7 @@ func TestRedisInsert(t *testing.T) {
 	os.Setenv("REDIS_SERVER", "localhost")
 	os.Setenv("REDIS_PORT", "6379")
 
-	t.Run("happy_test_integration", func(t *testing.T) {
+	t.Run("happy_path_integration", func(t *testing.T) {
 
 		redis := NewRedis()
 
