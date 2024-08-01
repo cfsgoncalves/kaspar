@@ -16,9 +16,11 @@ import (
 func GrpcServe() {
 	log.Debug().Msgf("Starting GRPC Server on %s", ":8081")
 
+	//Cache should be created on main
 	cache := repository.NewRedis()
 	stockRedditApi := usecase.NewStockRedditApi(cache)
 
+	// Should pass as argument
 	GRPC_PORT := configuration.GetEnvAsString("GRPC_PORT", "8081")
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", GRPC_PORT))
 	if err != nil {

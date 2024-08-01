@@ -1,5 +1,7 @@
-# kelvin
-Kelvin challenge
+# kaspar
+A small project with the objective to explore GRPC and a cache integration with REST API and GRPC.
+The project consists on an endpoint that will refresh the most recent 30 stocks with a set of atributes from reddit. The project has a cache-on-the-side pattern and is available using REST or grpc.
+Is also building in go using a clean-ish architecture.
 
 ## Run Locally
 
@@ -47,4 +49,3 @@ Returns 200 if the system is up.
 - Prometheous metrics
 - Grafana configuration
 - E2E tests on docker-compose
-- Consider connection multiplexing golang (Tried cmux. Do this instead: https://github.com/gin-gonic/gin/issues/2501)
